@@ -18,8 +18,10 @@ DEFAULT_CHAT_MODEL = "gpt-6-luna"
 QA_PROMPT = ChatPromptTemplate.from_messages([
     ("system", """
 你是一名机器学习知识库助手。
-请根据提供的资料回答问题。
-如果资料不足，请回答不知道。
+请根据本轮提供的资料回答问题。
+回答时请标明相关知识的来源页码，例如“来源：南瓜书 PDF 第 2 页”。
+只能引用本轮资料中明确标注的页码，不得编造页码。
+如果资料不足，请说明资料不足，不要使用未经验证的外部知识补充答案。
 
 资料：
 {context}
@@ -60,7 +62,15 @@ def open_index(embeddings=None, *, create=False):
 
 
 def combine_docs(docs):
-    return "\n\n".join(doc.page_content for doc in docs)
+    contents = []
+    for doc in docs:
+        page = doc.metadata.get("page")
+        if isinstance(page, int) and "total_pages" in doc.metadata:
+            # The original PyMuPDFLoader index uses zero-based pages; the standalone loader uses one-based pages.
+            page += 1
+        source = f"PDF 第 {page} 页" if isinstance(page, int) and page > 0 else "页码未知"
+        contents.append(f"[{source}]\n{doc.page_content}")
+    return "\n\n".join(contents)
 
 
 def build_qa_chain(llm, retriever):

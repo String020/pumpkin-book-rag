@@ -1,6 +1,6 @@
 # Pumpkin Book RAG
 
-A Streamlit chatbot for asking machine-learning questions in Chinese about Datawhale's *Pumpkin Book*. It streams answers, keeps conversation history for the current session, and prompts the model to say when the retrieved material is insufficient.
+A Streamlit chatbot for asking machine-learning questions in Chinese about Datawhale's *Pumpkin Book*. It streams answers, keeps conversation history for the current session, and prompts the model to cite the PDF page numbers of the retrieved passages or say when the material is insufficient.
 
 ## How it works
 
